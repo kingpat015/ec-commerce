@@ -295,7 +295,7 @@ const ManageUsers = () => {
                         user.role
                       )}`}
                     >
-                      {user.role.replace("_", " ")}
+                      {user.role ? user.role.replace("_", " ") : "N/A"}
                     </span>
                   </td>
                   <td className="px-6 py-2.5">
