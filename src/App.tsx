@@ -10,21 +10,13 @@ import Contact from "./pages/contact/Contact";
 import Login from "./pages/login/Login";
 import Register from "./pages/register/Register";
 import Bulletins from "./pages/bulletin/Bulletin";
+import ManageUsers from "./pages/user-management/UserManagement";
+import ManageBulletins from "./pages/manage-bulletins/BulletinManagement";
+import ManageProducts from "./pages/manage-products/ManageProducts";
 
-// Public Pages
-
-// Admin Pages (create placeholder components)
+// Admin Pages
 const AdminDashboard = () => (
   <div className="text-2xl font-bold">Admin Dashboard</div>
-);
-const ManageUsers = () => (
-  <div className="text-2xl font-bold">User Management</div>
-);
-const ManageProducts = () => (
-  <div className="text-2xl font-bold">Product Management</div>
-);
-const ManageBulletins = () => (
-  <div className="text-2xl font-bold">Bulletin Management</div>
 );
 
 function App() {

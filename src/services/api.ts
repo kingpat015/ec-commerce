@@ -65,34 +65,34 @@ class ApiService {
     return response.data;
   }
 
-  // User APIs
+  // User APIs (Admin)
   async getUsers(params?: {
     role?: string;
     status?: string;
     limit?: number;
     offset?: number;
   }) {
-    const response = await this.api.get("/users", { params });
+    const response = await this.api.get("/admin/users", { params });
     return response.data;
   }
 
   async getUserById(id: number) {
-    const response = await this.api.get(`/users/${id}`);
+    const response = await this.api.get(`/admin/users/${id}`);
     return response.data;
   }
 
   async createUser(data: Partial<User> & { password: string }) {
-    const response = await this.api.post("/users", data);
+    const response = await this.api.post("/admin/users", data);
     return response.data;
   }
 
   async updateUser(id: number, data: Partial<User>) {
-    const response = await this.api.put(`/users/${id}`, data);
+    const response = await this.api.put(`/admin/users/${id}`, data);
     return response.data;
   }
 
   async deleteUser(id: number) {
-    const response = await this.api.delete(`/users/${id}`);
+    const response = await this.api.delete(`/admin/users/${id}`);
     return response.data;
   }
 
@@ -112,13 +112,69 @@ class ApiService {
     return response.data;
   }
 
-  async createProduct(data: Partial<Product>) {
-    const response = await this.api.post("/products", data);
+  async createProduct(data: Partial<Product> & { imageFile?: File }) {
+    const formData = new FormData();
+
+    // Add all fields to FormData
+    if (data.name) formData.append("name", data.name);
+    if (data.description) formData.append("description", data.description);
+    if (data.short_description)
+      formData.append("short_description", data.short_description);
+    if (data.price !== undefined)
+      formData.append("price", data.price.toString());
+    if (data.stock !== undefined)
+      formData.append("stock", data.stock.toString());
+    if (data.category_id !== undefined)
+      formData.append("category_id", data.category_id.toString());
+    if (data.status) formData.append("status", data.status);
+
+    // Handle image file
+    if (data.imageFile) {
+      formData.append("image", data.imageFile);
+    } else if (data.image_url && !data.image_url.startsWith("data:")) {
+      // Only add URL if it's not base64
+      formData.append("image_url", data.image_url);
+    }
+
+    const response = await this.api.post("/products", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     return response.data;
   }
 
-  async updateProduct(id: number, data: Partial<Product>) {
-    const response = await this.api.put(`/products/${id}`, data);
+  async updateProduct(
+    id: number,
+    data: Partial<Product> & { imageFile?: File }
+  ) {
+    const formData = new FormData();
+
+    // Add all fields to FormData
+    if (data.name) formData.append("name", data.name);
+    if (data.description) formData.append("description", data.description);
+    if (data.short_description)
+      formData.append("short_description", data.short_description);
+    if (data.price !== undefined)
+      formData.append("price", data.price.toString());
+    if (data.stock !== undefined)
+      formData.append("stock", data.stock.toString());
+    if (data.category_id !== undefined)
+      formData.append("category_id", data.category_id.toString());
+    if (data.status) formData.append("status", data.status);
+
+    // Handle image file
+    if (data.imageFile) {
+      formData.append("image", data.imageFile);
+    } else if (data.image_url && !data.image_url.startsWith("data:")) {
+      formData.append("image_url", data.image_url);
+    }
+
+    const response = await this.api.put(`/products/${id}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     return response.data;
   }
 
