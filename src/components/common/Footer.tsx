@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import {
   MapPin,
@@ -11,13 +11,98 @@ import {
 } from "lucide-react";
 
 const Footer: React.FC = () => {
+  const observerRef = useRef<IntersectionObserver | null>(null);
+
+  useEffect(() => {
+    // Intersection Observer for scroll animations
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("animate-in");
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
+    );
+
+    // Observe all animatable elements
+    const timer = setTimeout(() => {
+      const elements = document.querySelectorAll(".footer-animate");
+      elements.forEach((el) => {
+        if (observerRef.current) {
+          observerRef.current.observe(el);
+        }
+      });
+    }, 100);
+
+    return () => {
+      clearTimeout(timer);
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
+  }, []);
+
   return (
     <footer className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-gray-300">
+      <style>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .footer-animate {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+
+        .footer-animate.animate-in {
+          animation: fadeInUp 0.6s ease-out forwards;
+        }
+      `}</style>
+
       <div className="container mx-auto px-4 py-12">
+        {/* Trust Badge Section */}
+        <div className="footer-animate mb-12 bg-gradient-to-r from-slate-800/50 to-slate-700/50 rounded-2xl p-6 border border-slate-700">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            <div className="space-y-2">
+              <div className="text-3xl font-bold text-cyan-400">20+</div>
+              <div className="text-xs text-gray-400 uppercase tracking-wide">
+                Years Experience
+              </div>
+            </div>
+            <div className="space-y-2">
+              <div className="text-3xl font-bold text-cyan-400">3,700</div>
+              <div className="text-xs text-gray-400 uppercase tracking-wide">
+                Square Meters Facility
+              </div>
+            </div>
+            <div className="space-y-2">
+              <div className="text-3xl font-bold text-cyan-400">100+</div>
+              <div className="text-xs text-gray-400 uppercase tracking-wide">
+                Satisfied Clients
+              </div>
+            </div>
+            <div className="space-y-2">
+              <div className="text-3xl font-bold text-cyan-400">ISO</div>
+              <div className="text-xs text-gray-400 uppercase tracking-wide">
+                Certified Quality
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Main Footer Content */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-10">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-10 mb-10">
           {/* Company Info */}
-          <div className="md:col-span-1">
+          <div className="md:col-span-1 footer-animate">
             <div className="mb-4">
               <h3 className="text-white text-2xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
                 Exelpack
@@ -59,7 +144,7 @@ const Footer: React.FC = () => {
           </div>
 
           {/* Quick Links */}
-          <div>
+          <div className="footer-animate" style={{ animationDelay: "0.1s" }}>
             <h4 className="text-white text-sm font-bold mb-4 uppercase tracking-wider">
               Quick Links
             </h4>
@@ -103,8 +188,53 @@ const Footer: React.FC = () => {
             </ul>
           </div>
 
+          {/* Our Products */}
+          <div className="footer-animate" style={{ animationDelay: "0.2s" }}>
+            <h4 className="text-white text-sm font-bold mb-4 uppercase tracking-wider">
+              Our Products
+            </h4>
+            <ul className="space-y-2.5">
+              <li>
+                <a
+                  href="#"
+                  className="text-gray-400 hover:text-cyan-400 transition-colors text-sm flex items-center group"
+                >
+                  <span className="w-0 group-hover:w-2 h-px bg-cyan-400 transition-all duration-300 mr-0 group-hover:mr-2"></span>
+                  Polymer Foams
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  className="text-gray-400 hover:text-cyan-400 transition-colors text-sm flex items-center group"
+                >
+                  <span className="w-0 group-hover:w-2 h-px bg-cyan-400 transition-all duration-300 mr-0 group-hover:mr-2"></span>
+                  Packaging Solutions
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  className="text-gray-400 hover:text-cyan-400 transition-colors text-sm flex items-center group"
+                >
+                  <span className="w-0 group-hover:w-2 h-px bg-cyan-400 transition-all duration-300 mr-0 group-hover:mr-2"></span>
+                  Custom Designs
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  className="text-gray-400 hover:text-cyan-400 transition-colors text-sm flex items-center group"
+                >
+                  <span className="w-0 group-hover:w-2 h-px bg-cyan-400 transition-all duration-300 mr-0 group-hover:mr-2"></span>
+                  Industrial Supplies
+                </a>
+              </li>
+            </ul>
+          </div>
+
           {/* Support */}
-          <div>
+          <div className="footer-animate" style={{ animationDelay: "0.3s" }}>
             <h4 className="text-white text-sm font-bold mb-4 uppercase tracking-wider">
               Support
             </h4>
@@ -149,7 +279,7 @@ const Footer: React.FC = () => {
           </div>
 
           {/* Contact */}
-          <div>
+          <div className="footer-animate" style={{ animationDelay: "0.4s" }}>
             <h4 className="text-white text-sm font-bold mb-4 uppercase tracking-wider">
               Get In Touch
             </h4>
@@ -208,7 +338,33 @@ const Footer: React.FC = () => {
 
         {/* Bottom Bar */}
         <div className="border-t border-slate-800 pt-8">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          {/* Certifications & Partners */}
+          <div
+            className="footer-animate mb-6 flex flex-wrap items-center justify-center gap-6 pb-6 border-b border-slate-800"
+            style={{ animationDelay: "0.5s" }}
+          >
+            <div className="text-xs text-gray-500 flex items-center gap-2">
+              <span className="w-2 h-2 bg-cyan-400 rounded-full"></span>
+              PEZA Zone Located
+            </div>
+            <div className="text-xs text-gray-500 flex items-center gap-2">
+              <span className="w-2 h-2 bg-cyan-400 rounded-full"></span>
+              Established 2005
+            </div>
+            <div className="text-xs text-gray-500 flex items-center gap-2">
+              <span className="w-2 h-2 bg-cyan-400 rounded-full"></span>
+              Local & International Clients
+            </div>
+            <div className="text-xs text-gray-500 flex items-center gap-2">
+              <span className="w-2 h-2 bg-cyan-400 rounded-full"></span>
+              Quality Certified
+            </div>
+          </div>
+
+          <div
+            className="footer-animate flex flex-col md:flex-row justify-between items-center gap-4"
+            style={{ animationDelay: "0.6s" }}
+          >
             <p className="text-sm text-gray-500">
               &copy; 2026{" "}
               <span className="text-gray-400 font-semibold">

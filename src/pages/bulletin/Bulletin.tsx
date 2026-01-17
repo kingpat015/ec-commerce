@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { Calendar, MapPin, Megaphone } from "lucide-react";
@@ -11,18 +11,60 @@ const Bulletins: React.FC = () => {
   const [bulletins, setBulletins] = useState<Bulletin[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedType, setSelectedType] = useState<string>("all");
+  const [pageLoaded, setPageLoaded] = useState(false);
+  const observerRef = useRef<IntersectionObserver | null>(null);
 
   const bulletinTypes = [
-    { value: "all", label: "All Bulletins" },
-    { value: "announcement", label: "Announcements" },
-    { value: "event", label: "Events" },
-    { value: "hiring", label: "Job Openings" },
-    { value: "achievement", label: "Achievements" },
+    { value: "all", label: "All Updates", icon: "📋" },
+    { value: "announcement", label: "Announcements", icon: "📢" },
+    { value: "event", label: "Events", icon: "🎉" },
+    { value: "hiring", label: "Careers", icon: "💼" },
+    { value: "achievement", label: "Achievements", icon: "🏆" },
   ];
 
+  // Page load animation
+  useEffect(() => {
+    setTimeout(() => setPageLoaded(true), 50);
+
+    // Setup Intersection Observer
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("animate-in");
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
+    );
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
+  }, []);
+
+  // Fetch bulletins when type changes
   useEffect(() => {
     fetchBulletins();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedType]);
+
+  // Observe cards after render
+  useEffect(() => {
+    if (!loading && bulletins.length > 0) {
+      const timer = setTimeout(() => {
+        const cards = document.querySelectorAll(".bulletin-card");
+        cards.forEach((card) => {
+          if (observerRef.current) {
+            observerRef.current.observe(card);
+          }
+        });
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [loading, bulletins]);
 
   const fetchBulletins = async () => {
     try {
@@ -32,82 +74,127 @@ const Bulletins: React.FC = () => {
           ? { type: selectedType, limit: 50 }
           : { limit: 50 };
       const response = await api.getBulletins(params);
+      console.log("Bulletins API Response:", response);
+      console.log("Bulletins Data:", response.bulletins);
       setBulletins(response.bulletins || []);
     } catch (error) {
       console.error("Error fetching bulletins:", error);
+      setBulletins([]);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const getTypeColor = (type: string) => {
-    switch (type) {
-      case "announcement":
-        return "bg-green-600";
-      case "event":
-        return "bg-red-600";
-      case "hiring":
-        return "bg-yellow-500";
-      case "achievement":
-        return "bg-green-600";
-      default:
-        return "bg-gray-600";
     }
   };
 
   const getTypeBadgeColor = (type: string) => {
     switch (type) {
       case "announcement":
-        return "bg-green-50 text-green-700";
+        return "bg-green-100 text-green-700 border-2 border-green-200";
       case "event":
-        return "bg-red-50 text-red-700";
+        return "bg-blue-100 text-blue-700 border-2 border-blue-200";
       case "hiring":
-        return "bg-yellow-50 text-yellow-700";
+        return "bg-amber-100 text-amber-700 border-2 border-amber-200";
       case "achievement":
-        return "bg-green-50 text-green-700";
+        return "bg-purple-100 text-purple-700 border-2 border-purple-200";
       default:
-        return "bg-gray-50 text-gray-700";
+        return "bg-gray-100 text-gray-700 border-2 border-gray-200";
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-20 max-w-7xl">
-        {/* Header */}
-        <div className="mb-16">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="w-16 h-16 bg-green-600 rounded-2xl flex items-center justify-center shadow-lg">
-              <Megaphone className="w-8 h-8 text-white" />
-            </div>
-            <div>
-              <h1 className="text-5xl font-light text-gray-900">
-                Company <span className="font-semibold">Bulletins</span>
-              </h1>
-              <p className="text-lg text-gray-600 mt-1 font-light">
-                News, Events & Opportunities
-              </p>
-            </div>
-          </div>
-          <p className="text-lg text-gray-700 max-w-3xl font-light">
-            {isAuthenticated
-              ? "Stay updated with announcements, events, and opportunities"
-              : "Login to view full bulletin details"}
-          </p>
+    <div
+      className={`min-h-screen bg-gray-50 transition-opacity duration-700 ${
+        pageLoaded ? "opacity-100" : "opacity-0"
+      }`}
+      style={{ fontFamily: "'Roboto', 'Open Sans', sans-serif" }}
+    >
+      <style>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
+        .bulletin-card {
+          opacity: 0;
+          transform: translateY(30px);
+          transition: none;
+        }
+
+        .bulletin-card.animate-in {
+          animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        .filter-tab {
+          opacity: 0;
+          animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .filter-tab:nth-child(1) { animation-delay: 0.1s; }
+        .filter-tab:nth-child(2) { animation-delay: 0.2s; }
+        .filter-tab:nth-child(3) { animation-delay: 0.3s; }
+        .filter-tab:nth-child(4) { animation-delay: 0.4s; }
+        .filter-tab:nth-child(5) { animation-delay: 0.5s; }
+      `}</style>
+
+      {/* Hero Section with Background - ENLARGED */}
+      <section className="relative py-32 md:py-40 -mt-4 overflow-hidden">
+        <div className="absolute inset-0">
+          <img
+            src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=1600&q=80"
+            alt="Business Team"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-gray-900/90 via-green-900/85 to-gray-800/90"></div>
         </div>
 
+        <div className="container mx-auto px-6 relative z-10">
+          <div className="max-w-4xl mx-auto text-center text-white">
+            <div className="inline-block px-4 py-1 bg-green-600/30 backdrop-blur-sm border border-green-400/30 rounded-full mb-6">
+              <span className="text-xs tracking-wider uppercase text-green-300 font-semibold">
+                Company Bulletin
+              </span>
+            </div>
+            <h1 className="text-5xl md:text-6xl font-bold mb-6">
+              News, Events & Opportunities
+            </h1>
+            <p className="text-xl text-gray-200 max-w-2xl mx-auto leading-relaxed">
+              {isAuthenticated
+                ? "Stay updated with the latest company announcements and opportunities"
+                : "Login to view full bulletin details and stay connected"}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-6 py-12 max-w-7xl">
         {/* Filter Tabs */}
         <div className="mb-12">
-          <div className="flex gap-3 flex-wrap">
+          <div className="flex gap-3 flex-wrap justify-center">
             {bulletinTypes.map((type) => (
               <button
                 key={type.value}
                 onClick={() => setSelectedType(type.value)}
-                className={`px-6 py-3 rounded-full text-sm font-medium transition-all ${
+                className={`filter-tab px-6 py-2 rounded-lg font-medium transition-all ${
                   selectedType === type.value
-                    ? "bg-gray-900 text-white shadow-lg"
-                    : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200 shadow-sm"
+                    ? "bg-green-600 text-white shadow-md"
+                    : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
                 }`}
               >
+                <span className="mr-2">{type.icon}</span>
                 {type.label}
               </button>
             ))}
@@ -121,28 +208,27 @@ const Bulletins: React.FC = () => {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {bulletins.map((bulletin) => (
-                <BulletinCard
-                  key={bulletin.id}
-                  bulletin={bulletin}
-                  isAuthenticated={isAuthenticated}
-                  getTypeColor={getTypeColor}
-                  getTypeBadgeColor={getTypeBadgeColor}
-                />
-              ))}
-            </div>
-
-            {bulletins.length === 0 && (
+            {bulletins.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {bulletins.map((bulletin) => (
+                  <BulletinCard
+                    key={bulletin.id}
+                    bulletin={bulletin}
+                    isAuthenticated={isAuthenticated}
+                    getTypeBadgeColor={getTypeBadgeColor}
+                  />
+                ))}
+              </div>
+            ) : (
               <div className="text-center py-32">
-                <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-6">
+                <div className="w-24 h-24 bg-gray-200 rounded-2xl flex items-center justify-center mx-auto mb-6">
                   <Megaphone className="w-12 h-12 text-gray-500" />
                 </div>
-                <h3 className="text-2xl font-light text-gray-900 mb-3">
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">
                   No bulletins found
                 </h3>
-                <p className="text-lg text-gray-600 font-light">
-                  Check back later for new announcements
+                <p className="text-base text-gray-600">
+                  Check back later for new announcements and updates
                 </p>
               </div>
             )}
@@ -156,9 +242,8 @@ const Bulletins: React.FC = () => {
 const BulletinCard: React.FC<{
   bulletin: Bulletin;
   isAuthenticated: boolean;
-  getTypeColor: (type: string) => string;
   getTypeBadgeColor: (type: string) => string;
-}> = ({ bulletin, isAuthenticated, getTypeColor, getTypeBadgeColor }) => {
+}> = ({ bulletin, isAuthenticated, getTypeBadgeColor }) => {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
@@ -171,79 +256,84 @@ const BulletinCard: React.FC<{
   return (
     <Link
       to={isAuthenticated ? `/bulletins/${bulletin.id}` : "/login"}
-      className="group bg-white rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-300 border border-gray-200 hover:border-green-500"
+      className="bulletin-card group bg-white rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-500 border-2 border-gray-200 hover:border-green-400 hover:-translate-y-2 relative"
     >
-      {/* Type Badge Stripe */}
-      <div className={`h-2 ${getTypeColor(bulletin.type)}`}></div>
+      {/* Subtle Gradient Accent */}
+      <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-green-400 via-green-500 to-green-600 opacity-80 group-hover:opacity-100 transition-opacity duration-500"></div>
 
-      <div className="p-6 space-y-4">
-        {/* Type Label & Date */}
-        <div className="flex items-center justify-between">
+      <div className="p-8 space-y-5">
+        {/* Type Badge & Date - More visible */}
+        <div className="flex items-center justify-between flex-wrap gap-3">
           <span
-            className={`px-3 py-1 rounded-full text-xs font-medium ${getTypeBadgeColor(
+            className={`px-4 py-2 rounded-full text-xs font-semibold ${getTypeBadgeColor(
               bulletin.type
-            )}`}
+            )} shadow-sm`}
           >
             {bulletin.type.charAt(0).toUpperCase() + bulletin.type.slice(1)}
           </span>
           {bulletin.event_date && (
-            <div className="flex items-center gap-2 text-sm text-gray-600 font-light">
-              <Calendar className="w-4 h-4" />
+            <div className="flex items-center gap-2 text-xs text-gray-600 font-semibold bg-gray-50 px-3 py-1.5 rounded-full">
+              <Calendar className="w-3.5 h-3.5" />
               <span>{formatDate(bulletin.event_date)}</span>
             </div>
           )}
         </div>
 
-        {/* Title */}
-        <h3 className="font-semibold text-gray-900 text-lg leading-snug group-hover:text-green-600 transition-colors line-clamp-2 min-h-[3.5rem]">
+        {/* Title - More prominent */}
+        <h3 className="font-bold text-gray-900 text-xl leading-tight group-hover:text-green-600 transition-colors line-clamp-2 min-h-[3.5rem]">
           {bulletin.title}
         </h3>
 
-        {/* Description */}
-        <p className="text-gray-600 text-sm line-clamp-3 leading-relaxed font-light min-h-[4rem]">
+        {/* Description - Better contrast */}
+        <p className="text-gray-700 text-sm line-clamp-3 leading-relaxed min-h-[4.5rem] font-medium">
           {isAuthenticated ? bulletin.description : bulletin.short_description}
         </p>
 
-        {/* Location */}
+        {/* Location - More prominent */}
         {bulletin.location && (
-          <div className="flex items-start gap-2 text-sm text-gray-600">
-            <MapPin className="w-4 h-4 flex-shrink-0 mt-0.5" />
-            <span className="line-clamp-2 font-light">{bulletin.location}</span>
+          <div className="flex items-start gap-3 text-sm text-gray-700 bg-green-50/50 p-4 rounded-xl border-2 border-green-100">
+            <MapPin className="w-4 h-4 flex-shrink-0 mt-0.5 text-green-600" />
+            <span className="line-clamp-2 font-medium">
+              {bulletin.location}
+            </span>
           </div>
         )}
 
-        {/* Divider */}
-        <div className="border-t border-gray-100 pt-4 mt-4"></div>
+        {/* Visible Divider */}
+        <div className="border-t-2 border-gray-100 pt-5 mt-5"></div>
 
-        {/* Footer */}
+        {/* Footer - More contrast */}
         <div className="flex items-center justify-between">
           {!isAuthenticated ? (
-            <span className="text-sm text-gray-500 font-light italic">
+            <span className="text-xs text-gray-500 italic font-semibold">
               Login to view details
             </span>
           ) : (
-            <span className="text-sm text-gray-600 font-light">
+            <span className="text-xs text-gray-600 font-semibold">
               {bulletin.created_by_name || "Exelpack"}
             </span>
           )}
-          <div className="flex items-center gap-1 text-green-600 font-semibold text-sm group-hover:translate-x-1 transition-transform">
-            Read more
+          <div className="flex items-center gap-2 text-green-600 font-bold text-sm group-hover:gap-3 transition-all">
+            <span>Read more</span>
             <svg
-              className="w-4 h-4"
+              className="w-4 h-4 group-hover:translate-x-1 transition-transform"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              strokeWidth={2.5}
             >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth={2}
                 d="M9 5l7 7-7 7"
               />
             </svg>
           </div>
         </div>
       </div>
+
+      {/* More visible hover glow */}
+      <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-green-50/0 via-green-50/0 to-green-100/0 group-hover:from-green-50/50 group-hover:to-green-100/20 transition-all duration-500 pointer-events-none"></div>
     </Link>
   );
 };
