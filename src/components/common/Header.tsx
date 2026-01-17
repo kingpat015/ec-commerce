@@ -40,6 +40,29 @@ const styles = `
     }
   }
 
+  @keyframes glowPulse {
+    0%, 100% {
+      box-shadow: 0 0 5px rgba(34, 197, 94, 0.5), 0 0 10px rgba(34, 197, 94, 0.3);
+    }
+    50% {
+      box-shadow: 0 0 10px rgba(34, 197, 94, 0.8), 0 0 20px rgba(34, 197, 94, 0.5), 0 0 30px rgba(34, 197, 94, 0.3);
+    }
+  }
+
+  @keyframes slideExpand {
+    0% {
+      transform: scaleX(0);
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      transform: scaleX(1);
+      opacity: 1;
+    }
+  }
+
   .animate-bounce-in {
     animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   }
@@ -57,6 +80,14 @@ const styles = `
     );
     background-size: 200% 100%;
     animation: shimmer 3s infinite;
+  }
+
+  .glow-pulse {
+    animation: glowPulse 2s ease-in-out infinite;
+  }
+
+  .slide-expand {
+    animation: slideExpand 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   }
 `;
 
@@ -242,7 +273,7 @@ const Header: React.FC = () => {
           </div>
         </div>
 
-        {/* Navigation Tabs - With visible separation */}
+        {/* Navigation Tabs - With Enhanced Indicator */}
         <nav
           className={`relative bg-gradient-to-b from-gray-50 via-white to-gray-50 border-t-2 border-gray-100 shadow-[0_4px_16px_rgba(0,0,0,0.08)] transition-all duration-500 ease-out ${
             showNav
@@ -446,18 +477,39 @@ const NavLink: React.FC<{
     >
       {children}
 
+      {/* Enhanced Multi-Layer Indicator */}
       <span
-        className={`absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-green-600 via-green-500 to-yellow-500 transform transition-all duration-300 origin-left rounded-t-full ${
-          active
-            ? "scale-x-100 opacity-100"
-            : "scale-x-0 opacity-0 group-hover:scale-x-100 group-hover:opacity-100"
+        className={`absolute bottom-0 left-0 w-full overflow-hidden rounded-t-full transition-all duration-300 ${
+          active ? "h-1.5" : "h-0 group-hover:h-1.5"
         }`}
-      ></span>
+      >
+        {/* Base Gradient Layer */}
+        <span className="absolute inset-0 bg-gradient-to-r from-green-600 via-green-500 to-yellow-500"></span>
 
+        {/* Glowing Overlay */}
+        <span
+          className={`absolute inset-0 bg-gradient-to-r from-green-400 via-green-300 to-yellow-400 ${
+            active ? "glow-pulse" : ""
+          }`}
+        ></span>
+
+        {/* Shimmer Effect */}
+        <span
+          className={`absolute inset-0 shimmer-effect ${
+            active ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+          }`}
+        ></span>
+
+        {/* Top Highlight */}
+        <span className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white to-transparent opacity-60"></span>
+      </span>
+
+      {/* Active Background Glow */}
       {active && (
-        <span className="absolute inset-0 bg-gradient-to-b from-green-50/80 to-transparent rounded-t-2xl -z-10 animate-slide-down"></span>
+        <span className="absolute inset-0 bg-gradient-to-b from-green-50/80 to-transparent rounded-t-2xl -z-10 slide-expand"></span>
       )}
 
+      {/* Hover Background */}
       <span className="absolute inset-0 bg-gradient-to-b from-green-50/0 to-transparent rounded-t-2xl -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
     </Link>
   );
