@@ -8,6 +8,7 @@ import {
   CheckCircle,
   ArrowRight,
 } from "lucide-react";
+import api from "../../services/api";
 
 const Contact: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -57,14 +58,20 @@ const Contact: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    setSubmitted(true);
-    setTimeout(() => {
-      setSubmitted(false);
-      setFormData({ subject: "", fullName: "", email: "", message: "" });
-    }, 3000);
+
+    try {
+      await api.submitContactForm(formData);
+      setSubmitted(true);
+      setTimeout(() => {
+        setSubmitted(false);
+        setFormData({ subject: "", fullName: "", email: "", message: "" });
+      }, 3000);
+    } catch (error) {
+      console.error("Error submitting contact form:", error);
+      alert("Failed to send message. Please try again.");
+    }
   };
 
   const handleChange = (

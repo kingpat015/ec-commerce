@@ -13,7 +13,7 @@ import {
 import type { Product, ProductCategory } from "../../types";
 import api from "../../services/api";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 interface FormData {
   name: string;
@@ -135,12 +135,17 @@ const ManageProducts = () => {
   const handleCreateProduct = async () => {
     try {
       const productData = {
-        ...formData,
+        name: formData.name,
+        description: formData.description,
+        short_description: formData.short_description,
         price: Number(formData.price),
         stock: Number(formData.stock),
         category_id: formData.category_id
           ? Number(formData.category_id)
           : undefined,
+        status: formData.status,
+        image_url: formData.image_url,
+        imageFile: formData.imageFile, // ✅ Pass the file here
       };
 
       await api.createProduct(productData);
@@ -159,12 +164,17 @@ const ManageProducts = () => {
 
     try {
       const productData = {
-        ...formData,
+        name: formData.name,
+        description: formData.description,
+        short_description: formData.short_description,
         price: Number(formData.price),
         stock: Number(formData.stock),
         category_id: formData.category_id
           ? Number(formData.category_id)
           : undefined,
+        status: formData.status,
+        image_url: formData.image_url,
+        imageFile: formData.imageFile, // ✅ Pass the file here
       };
 
       await api.updateProduct(selectedProduct.id, productData);

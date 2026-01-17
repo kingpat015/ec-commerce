@@ -217,6 +217,17 @@ class ApiService {
     const response = await this.api.delete(`/bulletins/${id}`);
     return response.data;
   }
+
+  // Contact API
+  async submitContactForm(data: {
+    subject: string;
+    fullName: string;
+    email: string;
+    message: string;
+  }) {
+    const response = await this.api.post("/contact", data);
+    return response.data;
+  }
 }
 
 export default new ApiService();
