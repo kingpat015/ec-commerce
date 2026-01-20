@@ -29,7 +29,7 @@ class ApiService {
         }
         return config;
       },
-      (error) => Promise.reject(error)
+      (error) => Promise.reject(error),
     );
 
     // Response interceptor for error handling
@@ -44,7 +44,7 @@ class ApiService {
           window.location.href = "/login";
         }
         return Promise.reject(error);
-      }
+      },
     );
   }
 
@@ -146,7 +146,7 @@ class ApiService {
 
   async updateProduct(
     id: number,
-    data: Partial<Product> & { imageFile?: File }
+    data: Partial<Product> & { imageFile?: File },
   ) {
     const formData = new FormData();
 

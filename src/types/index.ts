@@ -86,3 +86,31 @@ export interface PaginatedResponse<T> {
   page: number;
   limit: number;
 }
+
+// Dashboard Types
+export interface DashboardStats {
+  totalProducts: number;
+  totalUsers: number;
+  totalBulletins: number;
+  contactSubmissions: number;
+  activeProducts: number;
+  activeUsers: number;
+}
+
+export interface Activity {
+  icon: any;
+  title: string;
+  description: string;
+  time: string;
+  color: string;
+}
+
+export interface ContactSubmission {
+  id: number;
+  status?: string;
+  subject?: string;
+  full_name?: string;
+  email?: string;
+  message?: string;
+  created_at?: string;
+}

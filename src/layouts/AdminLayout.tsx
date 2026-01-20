@@ -1,6 +1,15 @@
 import React, { useState } from "react";
 import { Outlet, Link, useLocation, Navigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import {
+  LayoutDashboard,
+  Users,
+  Package,
+  FileText,
+  Home,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 
 const AdminLayout: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
@@ -25,29 +34,50 @@ const AdminLayout: React.FC = () => {
   const canAccessBulletins = user.role === "admin" || user.role === "hr_user";
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-50">
       {/* Sidebar */}
       <aside
-        className={`fixed left-0 top-0 h-full bg-gray-900 text-white transition-all duration-300 z-40 ${
-          sidebarOpen ? "w-64" : "w-20"
+        className={`fixed left-0 top-0 h-full bg-white/80 backdrop-blur-xl border-r border-slate-200/60 transition-all duration-300 z-40 shadow-xl shadow-slate-200/50 ${
+          sidebarOpen ? "w-64" : "w-16"
         }`}
       >
-        <div className="p-4 border-b border-gray-800">
+        <div className="p-4 border-b border-slate-200/60 bg-gradient-to-r from-blue-500/5 to-transparent">
           <div className="flex items-center justify-between">
-            {sidebarOpen && <h2 className="text-xl font-bold">Admin Panel</h2>}
+            {sidebarOpen && (
+              <div className="flex items-center space-x-2">
+                {/* Exelpack Logo with glow effect */}
+                <div className="relative">
+                  <div className="absolute inset-0 bg-blue-400/20 blur-lg rounded-lg"></div>
+                  <img
+                    src="https://exelpackcorp.com/wp-content/themes/exelpack2014/img/logo.png"
+                    alt="Exelpack"
+                    className="h-10 w-auto relative z-10"
+                  />
+                </div>
+              </div>
+            )}
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="p-2 rounded hover:bg-gray-800 transition-colors"
+              className="p-1.5 rounded-lg hover:bg-blue-50 transition-all duration-200 ml-auto text-slate-600 hover:text-blue-600 hover:scale-110"
             >
-              {sidebarOpen ? "◀" : "▶"}
+              {sidebarOpen ? (
+                <ChevronLeft size={18} />
+              ) : (
+                <ChevronRight size={18} />
+              )}
             </button>
           </div>
+          {sidebarOpen && (
+            <p className="text-xs text-slate-500 mt-2 font-medium">
+              Admin Panel
+            </p>
+          )}
         </div>
 
-        <nav className="p-4 space-y-2">
+        <nav className="p-3 space-y-1">
           <NavItem
             to="/admin"
-            icon="📊"
+            icon={<LayoutDashboard size={20} />}
             label="Dashboard"
             active={isActive("/admin")}
             collapsed={!sidebarOpen}
@@ -56,7 +86,7 @@ const AdminLayout: React.FC = () => {
           {canAccessUsers && (
             <NavItem
               to="/admin/users"
-              icon="👥"
+              icon={<Users size={20} />}
               label="User Management"
               active={isActive("/admin/users")}
               collapsed={!sidebarOpen}
@@ -66,7 +96,7 @@ const AdminLayout: React.FC = () => {
           {canAccessProducts && (
             <NavItem
               to="/admin/products"
-              icon="📦"
+              icon={<Package size={20} />}
               label="Products"
               active={isActive("/admin/products")}
               collapsed={!sidebarOpen}
@@ -76,50 +106,70 @@ const AdminLayout: React.FC = () => {
           {canAccessBulletins && (
             <NavItem
               to="/admin/bulletins"
-              icon="📰"
+              icon={<FileText size={20} />}
               label="Bulletins"
               active={isActive("/admin/bulletins")}
               collapsed={!sidebarOpen}
             />
           )}
+        </nav>
 
-          <hr className="border-gray-800 my-4" />
-
+        {/* Back to Site - Bottom of sidebar */}
+        <div className="absolute bottom-0 left-0 right-0 p-3 border-t border-slate-200/60 bg-slate-50/50">
           <NavItem
             to="/"
-            icon="🏠"
+            icon={<Home size={20} />}
             label="Back to Site"
             active={false}
             collapsed={!sidebarOpen}
           />
-        </nav>
+        </div>
       </aside>
 
       {/* Main Content */}
       <div
         className={`transition-all duration-300 ${
-          sidebarOpen ? "ml-64" : "ml-20"
+          sidebarOpen ? "ml-64" : "ml-16"
         }`}
       >
         {/* Top Bar */}
-        <header className="bg-white shadow-sm sticky top-0 z-30">
-          <div className="px-6 py-4">
+        <header className="bg-white/70 backdrop-blur-xl border-b border-slate-200/60 sticky top-0 z-30 shadow-sm">
+          <div className="px-6 py-3">
             <div className="flex items-center justify-between">
-              <h1 className="text-2xl font-semibold text-gray-900">
-                {location.pathname === "/admin" && "Dashboard"}
-                {location.pathname === "/admin/users" && "User Management"}
-                {location.pathname === "/admin/products" &&
-                  "Product Management"}
-                {location.pathname === "/admin/bulletins" &&
-                  "Bulletin Management"}
-              </h1>
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2 px-3 py-1.5 bg-gradient-to-r from-blue-50 to-transparent rounded-lg border border-blue-100">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-xs font-medium text-slate-600">
+                    System Online
+                  </span>
+                </div>
+                <div className="text-xs text-slate-500">
+                  {new Date().toLocaleDateString("en-US", {
+                    weekday: "long",
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </div>
+              </div>
 
               <div className="flex items-center space-x-4">
-                <div className="text-sm text-gray-600">
-                  <span className="font-medium">{user.name}</span>
-                  <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">
-                    {user.role.replace("_", " ").toUpperCase()}
-                  </span>
+                <div className="flex items-center space-x-2 px-3 py-1.5 bg-slate-50 rounded-lg border border-slate-200">
+                  <div className="text-right">
+                    <p className="text-sm font-medium text-slate-700">
+                      {user.name}
+                    </p>
+                    <p className="text-xs text-slate-500">
+                      {user.role.replace("_", " ").charAt(0).toUpperCase() +
+                        user.role.replace("_", " ").slice(1)}
+                    </p>
+                  </div>
+                  <div className="relative group">
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full blur opacity-75 group-hover:opacity-100 transition-opacity"></div>
+                    <div className="relative w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-sm font-medium shadow-lg">
+                      {user.name.charAt(0).toUpperCase()}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -127,8 +177,17 @@ const AdminLayout: React.FC = () => {
         </header>
 
         {/* Page Content */}
-        <main className="p-6">
-          <Outlet />
+        <main className="p-6 relative">
+          {/* Decorative color patches */}
+          <div className="absolute top-10 right-20 w-32 h-32 bg-blue-200/20 rounded-full blur-3xl"></div>
+          <div className="absolute top-40 left-10 w-40 h-40 bg-purple-200/20 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 right-40 w-36 h-36 bg-cyan-200/20 rounded-full blur-3xl"></div>
+          <div className="absolute top-60 right-10 w-28 h-28 bg-pink-200/20 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-40 left-20 w-32 h-32 bg-amber-200/20 rounded-full blur-3xl"></div>
+
+          <div className="relative z-10">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>
@@ -137,7 +196,7 @@ const AdminLayout: React.FC = () => {
 
 interface NavItemProps {
   to: string;
-  icon: string;
+  icon: React.ReactNode;
   label: string;
   active: boolean;
   collapsed: boolean;
@@ -153,15 +212,19 @@ const NavItem: React.FC<NavItemProps> = ({
   return (
     <Link
       to={to}
-      className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
+      className={`group flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
         active
-          ? "bg-blue-600 text-white"
-          : "text-gray-300 hover:bg-gray-800 hover:text-white"
+          ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30 scale-105"
+          : "text-slate-600 hover:bg-gradient-to-r hover:from-blue-50 hover:to-transparent hover:text-blue-700 hover:translate-x-1"
       }`}
       title={collapsed ? label : undefined}
     >
-      <span className="text-xl">{icon}</span>
-      {!collapsed && <span className="font-medium">{label}</span>}
+      <span
+        className={`flex-shrink-0 transition-transform duration-200 ${active ? "" : "group-hover:scale-110"}`}
+      >
+        {icon}
+      </span>
+      {!collapsed && <span className="text-sm font-medium">{label}</span>}
     </Link>
   );
 };

@@ -39,7 +39,7 @@ const Products: React.FC = () => {
             }
           });
         },
-        { threshold: 0.1 }
+        { threshold: 0.1 },
       );
 
       const sections = document.querySelectorAll("[data-animate]");
@@ -77,7 +77,7 @@ const Products: React.FC = () => {
 
   return (
     <div
-      className="min-h-screen bg-gray-50"
+      className="min-h-screen bg-gradient-to-b from-gray-50 to-white"
       style={{
         fontFamily: "'Roboto', 'Open Sans', sans-serif",
         animation: "fadeIn 0.6s ease-out",
@@ -120,6 +120,11 @@ const Products: React.FC = () => {
             opacity: 1;
             transform: translateY(0);
           }
+        }
+
+        @keyframes shimmer {
+          0% { background-position: -1000px 0; }
+          100% { background-position: 1000px 0; }
         }
 
         .animate-slideUp {
@@ -193,9 +198,24 @@ const Products: React.FC = () => {
           opacity: 0.2;
           pointer-events: none;
         }
+
+        .shimmer-line {
+          background: linear-gradient(90deg, transparent, rgba(22, 163, 74, 0.1), transparent);
+          background-size: 1000px 100%;
+          animation: shimmer 3s infinite;
+        }
+
+        .floating-accent {
+          animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-10px); }
+        }
       `}</style>
 
-      {/* Hero Section with Background Image - Larger Size */}
+      {/* Hero Section with Enhanced Visuals */}
       <section className="relative h-[50vh] overflow-hidden -mt-4">
         <div className="absolute inset-0">
           <img
@@ -205,20 +225,29 @@ const Products: React.FC = () => {
             style={{ animation: "scaleIn 1s ease-out" }}
           />
           <div className="absolute inset-0 bg-gradient-to-br from-gray-900/90 via-green-900/85 to-gray-800/90"></div>
+
+          {/* Floating Decorative Elements */}
+          <div className="absolute top-20 left-10 w-32 h-32 bg-green-500/10 rounded-full blur-3xl floating-accent"></div>
+          <div
+            className="absolute bottom-20 right-10 w-40 h-40 bg-green-400/10 rounded-full blur-3xl floating-accent"
+            style={{ animationDelay: "2s" }}
+          ></div>
         </div>
 
         <div className="absolute inset-0 z-10 flex items-center justify-center">
           <div className="container mx-auto px-6">
             <div className="max-w-4xl mx-auto text-center text-white">
-              <div className="inline-block px-4 py-1 bg-green-600/30 backdrop-blur-sm border border-green-400/30 rounded-full mb-6 animate-slideUp stagger-1">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-green-600/30 backdrop-blur-sm border border-green-400/30 rounded-full mb-6 animate-slideUp stagger-1">
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                 <span className="text-xs tracking-wider uppercase text-green-300 font-semibold">
                   Our Products
                 </span>
               </div>
-              <h1 className="text-4xl md:text-5xl font-bold mb-4 animate-slideUp stagger-2">
+              <h1 className="text-4xl md:text-5xl font-bold mb-4 animate-slideUp stagger-2 bg-gradient-to-r from-white to-green-100 bg-clip-text text-transparent">
                 Premium Packaging Solutions
               </h1>
-              <p className="text-lg text-gray-200 max-w-2xl mx-auto animate-slideUp stagger-3">
+              <div className="shimmer-line h-0.5 w-24 mx-auto mb-4"></div>
+              <p className="text-base md:text-lg text-gray-200 max-w-2xl mx-auto animate-slideUp stagger-3">
                 {isAuthenticated
                   ? "Explore our comprehensive range of polymer foams and corrugated packaging solutions"
                   : "Login to view full product specifications, pricing, and technical details"}
@@ -231,7 +260,7 @@ const Products: React.FC = () => {
       <div className="container mx-auto px-6 py-12 max-w-7xl">
         {/* Search & Filter */}
         <div className="mb-12">
-          {/* Search Bar */}
+          {/* Search Bar with Enhanced Design */}
           <form
             onSubmit={handleSearch}
             className="mb-8"
@@ -243,26 +272,26 @@ const Products: React.FC = () => {
                 isVisible["search-bar"] ? "animate-slideUp visible" : ""
               }`}
             >
-              <div className="flex-1 relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <div className="flex-1 relative group">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-green-600 transition-colors" />
                 <input
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Search products..."
-                  className="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent transition-all shadow-sm"
+                  className="w-full pl-12 pr-4 py-3.5 bg-white border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-600/20 focus:border-green-600 transition-all shadow-sm hover:shadow-md"
                 />
               </div>
               <button
                 type="submit"
-                className="px-8 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold transition-all shadow-md hover:shadow-lg"
+                className="px-8 py-3.5 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white rounded-xl font-semibold transition-all shadow-md hover:shadow-lg hover:scale-105 active:scale-95"
               >
                 Search
               </button>
             </div>
           </form>
 
-          {/* Category Filters */}
+          {/* Category Filters with Enhanced Style */}
           <div
             id="category-filters"
             data-animate
@@ -274,21 +303,32 @@ const Products: React.FC = () => {
               <button
                 key={category.id}
                 onClick={() => setActiveCategory(category.id)}
-                className={`px-6 py-2 rounded-lg font-medium transition-all ${
+                className={`px-6 py-2.5 rounded-xl font-medium transition-all duration-300 ${
                   activeCategory === category.id
-                    ? "bg-green-600 text-white shadow-md"
-                    : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
+                    ? "bg-gradient-to-r from-green-600 to-green-700 text-white shadow-lg shadow-green-600/30 scale-105"
+                    : "bg-white text-gray-700 hover:bg-gray-50 border-2 border-gray-200 hover:border-green-200 hover:shadow-md"
                 } ${
                   isVisible["category-filters"]
                     ? `animate-fadeInUp stagger-${index + 1}`
                     : ""
                 }`}
               >
-                <span className="mr-2">{category.icon}</span>
-                {category.name}
+                <span className="mr-2 text-base">{category.icon}</span>
+                <span className="text-sm">{category.name}</span>
               </button>
             ))}
           </div>
+        </div>
+
+        {/* Decorative Section Divider */}
+        <div className="flex items-center gap-4 mb-10 max-w-4xl mx-auto">
+          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+          <div className="flex gap-1.5">
+            <div className="w-1.5 h-1.5 rounded-full bg-green-600"></div>
+            <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+            <div className="w-1.5 h-1.5 rounded-full bg-green-400"></div>
+          </div>
+          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
         </div>
 
         {/* Products Grid */}
@@ -325,13 +365,13 @@ const Products: React.FC = () => {
               </div>
             ) : (
               <div className="text-center py-32">
-                <div className="w-24 h-24 bg-gray-200 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                  <ShoppingBag className="w-12 h-12 text-gray-500" />
+                <div className="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-inner">
+                  <ShoppingBag className="w-12 h-12 text-gray-400" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                <h3 className="text-xl font-bold text-gray-900 mb-2">
                   No products found
                 </h3>
-                <p className="text-base text-gray-600">
+                <p className="text-sm text-gray-600">
                   Try adjusting your search criteria or browse all products
                 </p>
               </div>
@@ -362,7 +402,7 @@ const ProductCard: React.FC<{ product: Product; onClick: () => void }> = ({
     <div className="product-frame">
       <button
         onClick={onClick}
-        className="group bg-white rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-200 hover:border-green-500 w-full text-left relative"
+        className="group bg-white rounded-xl overflow-hidden hover:shadow-2xl transition-all duration-300 border-2 border-gray-200 hover:border-green-500 w-full text-left relative"
       >
         {/* Corner Accents */}
         <div className="absolute top-0 left-0 w-5 h-5 border-t-3 border-l-3 border-green-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"></div>
@@ -371,7 +411,7 @@ const ProductCard: React.FC<{ product: Product; onClick: () => void }> = ({
         <div className="absolute bottom-0 right-0 w-5 h-5 border-b-3 border-r-3 border-green-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"></div>
 
         {/* Image */}
-        <div className="relative bg-gradient-to-br from-gray-100 to-gray-50 h-56 overflow-hidden">
+        <div className="relative bg-gradient-to-br from-gray-100 via-gray-50 to-white h-56 overflow-hidden">
           {product.image_url ? (
             <img
               src={product.image_url}
@@ -380,23 +420,23 @@ const ProductCard: React.FC<{ product: Product; onClick: () => void }> = ({
             />
           ) : (
             <div className="flex items-center justify-center h-full">
-              <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center shadow-lg">
+              <div className="w-20 h-20 bg-gradient-to-br from-white to-gray-100 rounded-2xl flex items-center justify-center shadow-lg border border-gray-200">
                 <Package className="w-10 h-10 text-gray-400" />
               </div>
             </div>
           )}
           {/* Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
           {/* Decorative Badge */}
-          <div className="absolute top-3 right-3 bg-green-600 text-white text-xs font-bold px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <div className="absolute top-3 right-3 bg-gradient-to-r from-green-600 to-green-700 text-white text-xs font-bold px-3 py-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-lg transform group-hover:scale-105">
             View Details
           </div>
         </div>
 
         {/* Content */}
         <div className="p-6 space-y-3">
-          <h3 className="font-bold text-gray-900 text-lg leading-snug group-hover:text-green-600 transition-colors line-clamp-2 min-h-[3rem]">
+          <h3 className="font-bold text-gray-900 text-base leading-snug group-hover:text-green-600 transition-colors line-clamp-2 min-h-[3rem]">
             {product.name}
           </h3>
           <p className="text-gray-600 text-sm line-clamp-2 leading-relaxed min-h-[2.5rem]">
@@ -406,10 +446,10 @@ const ProductCard: React.FC<{ product: Product; onClick: () => void }> = ({
           {/* Divider with gradient */}
           <div className="relative py-3">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t-2 border-gray-100"></div>
+              <div className="w-full border-t border-gray-100"></div>
             </div>
             <div className="relative flex justify-center">
-              <div className="w-8 h-1 bg-gradient-to-r from-green-400 to-green-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <div className="w-8 h-0.5 bg-gradient-to-r from-green-400 to-green-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
             </div>
           </div>
 
@@ -417,7 +457,7 @@ const ProductCard: React.FC<{ product: Product; onClick: () => void }> = ({
           <div className="flex items-center justify-between pt-2">
             {isAuthenticated && product.price ? (
               <div className="flex flex-col">
-                <span className="text-2xl font-bold text-green-600">
+                <span className="text-xl font-bold bg-gradient-to-r from-green-600 to-green-700 bg-clip-text text-transparent">
                   ₱{product.price.toLocaleString()}
                 </span>
                 <span className="text-xs text-gray-500 font-medium">
@@ -427,7 +467,7 @@ const ProductCard: React.FC<{ product: Product; onClick: () => void }> = ({
             ) : (
               <div className="flex items-center gap-2 text-gray-500">
                 <svg
-                  className="w-5 h-5"
+                  className="w-4 h-4"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -439,13 +479,13 @@ const ProductCard: React.FC<{ product: Product; onClick: () => void }> = ({
                     d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
                   />
                 </svg>
-                <span className="text-sm font-semibold">Login for pricing</span>
+                <span className="text-xs font-semibold">Login for pricing</span>
               </div>
             )}
-            <div className="flex items-center gap-2 text-green-600 font-bold text-sm group-hover:translate-x-2 transition-transform">
-              <span>View</span>
+            <div className="flex items-center gap-2 text-green-600 font-bold text-sm group-hover:translate-x-1 transition-transform">
+              <span className="text-xs">View</span>
               <svg
-                className="w-5 h-5"
+                className="w-4 h-4"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"

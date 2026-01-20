@@ -12,14 +12,11 @@ import Contact from "./pages/contact/Contact";
 import Login from "./pages/login/Login";
 import Register from "./pages/register/Register";
 import Bulletins from "./pages/bulletin/Bulletin";
+import Dashboard from "./pages/dashboard/Dashboard";
 import ManageUsers from "./pages/user-management/UserManagement";
 import ManageBulletins from "./pages/manage-bulletins/BulletinManagement";
 import ManageProducts from "./pages/manage-products/ManageProducts";
 import AnimatedPage from "./components/common/AnimatedPage";
-
-const AdminDashboard = () => (
-  <div className="text-2xl font-bold">Admin Dashboard</div>
-);
 
 // Wrapper component to use useLocation
 function AnimatedRoutes() {
@@ -101,7 +98,7 @@ function AnimatedRoutes() {
             index
             element={
               <AnimatedPage>
-                <AdminDashboard />
+                <Dashboard />
               </AnimatedPage>
             }
           />

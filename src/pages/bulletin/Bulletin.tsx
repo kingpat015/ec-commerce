@@ -35,7 +35,7 @@ const Bulletins: React.FC = () => {
           }
         });
       },
-      { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
+      { threshold: 0.1, rootMargin: "0px 0px -50px 0px" },
     );
 
     return () => {
@@ -128,6 +128,69 @@ const Bulletins: React.FC = () => {
           }
         }
 
+        @keyframes float {
+          0%, 100% { transform: translateY(0px) translateX(0px); }
+          25% { transform: translateY(-20px) translateX(10px); }
+          50% { transform: translateY(-10px) translateX(-10px); }
+          75% { transform: translateY(-15px) translateX(5px); }
+        }
+
+        @keyframes pulse-subtle {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.8; }
+        }
+
+        .particle {
+          position: absolute;
+          background: radial-gradient(circle, rgba(74, 222, 128, 0.4) 0%, transparent 70%);
+          border-radius: 50%;
+          pointer-events: none;
+        }
+
+        .particle-1 {
+          width: 150px;
+          height: 150px;
+          top: 10%;
+          left: 10%;
+          animation: float 8s ease-in-out infinite;
+        }
+
+        .particle-2 {
+          width: 100px;
+          height: 100px;
+          top: 60%;
+          right: 15%;
+          animation: float 10s ease-in-out infinite 1s;
+        }
+
+        .particle-3 {
+          width: 120px;
+          height: 120px;
+          bottom: 20%;
+          left: 20%;
+          animation: float 12s ease-in-out infinite 2s;
+        }
+
+        .particle-4 {
+          width: 80px;
+          height: 80px;
+          top: 30%;
+          right: 25%;
+          animation: float 9s ease-in-out infinite 0.5s;
+        }
+
+        .particle-5 {
+          width: 90px;
+          height: 90px;
+          bottom: 35%;
+          right: 10%;
+          animation: float 11s ease-in-out infinite 1.5s;
+        }
+
+        .animate-pulse-subtle {
+          animation: pulse-subtle 3s ease-in-out infinite;
+        }
+
         .bulletin-card {
           opacity: 0;
           transform: translateY(30px);
@@ -150,7 +213,7 @@ const Bulletins: React.FC = () => {
         .filter-tab:nth-child(5) { animation-delay: 0.5s; }
       `}</style>
 
-      {/* Hero Section with Background - ENLARGED */}
+      {/* Hero Section with Background - ENHANCED */}
       <section className="relative py-32 md:py-40 -mt-4 overflow-hidden">
         <div className="absolute inset-0">
           <img
@@ -159,16 +222,25 @@ const Bulletins: React.FC = () => {
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-br from-gray-900/90 via-green-900/85 to-gray-800/90"></div>
+
+          {/* Animated particles */}
+          <div className="absolute inset-0 opacity-30">
+            <div className="particle particle-1"></div>
+            <div className="particle particle-2"></div>
+            <div className="particle particle-3"></div>
+            <div className="particle particle-4"></div>
+            <div className="particle particle-5"></div>
+          </div>
         </div>
 
         <div className="container mx-auto px-6 relative z-10">
           <div className="max-w-4xl mx-auto text-center text-white">
-            <div className="inline-block px-4 py-1 bg-green-600/30 backdrop-blur-sm border border-green-400/30 rounded-full mb-6">
+            <div className="inline-block px-4 py-1 bg-green-600/30 backdrop-blur-sm border border-green-400/30 rounded-full mb-6 animate-pulse-subtle">
               <span className="text-xs tracking-wider uppercase text-green-300 font-semibold">
                 Company Bulletin
               </span>
             </div>
-            <h1 className="text-5xl md:text-6xl font-bold mb-6">
+            <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white via-green-50 to-white">
               News, Events & Opportunities
             </h1>
             <p className="text-xl text-gray-200 max-w-2xl mx-auto leading-relaxed">
@@ -176,6 +248,26 @@ const Bulletins: React.FC = () => {
                 ? "Stay updated with the latest company announcements and opportunities"
                 : "Login to view full bulletin details and stay connected"}
             </p>
+
+            {/* Stats bar - subtle and professional */}
+            <div className="mt-10 grid grid-cols-3 gap-6 max-w-2xl mx-auto">
+              <div className="backdrop-blur-sm bg-white/10 rounded-lg p-4 border border-white/20">
+                <div className="text-2xl font-bold text-green-300">
+                  {bulletins.length}
+                </div>
+                <div className="text-xs text-gray-300 mt-1">Active Posts</div>
+              </div>
+              <div className="backdrop-blur-sm bg-white/10 rounded-lg p-4 border border-white/20">
+                <div className="text-2xl font-bold text-green-300">
+                  {bulletinTypes.length - 1}
+                </div>
+                <div className="text-xs text-gray-300 mt-1">Categories</div>
+              </div>
+              <div className="backdrop-blur-sm bg-white/10 rounded-lg p-4 border border-white/20">
+                <div className="text-2xl font-bold text-green-300">24/7</div>
+                <div className="text-xs text-gray-300 mt-1">Updated</div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -266,7 +358,7 @@ const BulletinCard: React.FC<{
         <div className="flex items-center justify-between flex-wrap gap-3">
           <span
             className={`px-4 py-2 rounded-full text-xs font-semibold ${getTypeBadgeColor(
-              bulletin.type
+              bulletin.type,
             )} shadow-sm`}
           >
             {bulletin.type.charAt(0).toUpperCase() + bulletin.type.slice(1)}
