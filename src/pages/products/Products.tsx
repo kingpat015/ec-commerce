@@ -216,7 +216,7 @@ const Products: React.FC = () => {
       `}</style>
 
       {/* Hero Section with Enhanced Visuals */}
-      <section className="relative h-[50vh] overflow-hidden -mt-4">
+      <section className="relative h-[65vh] overflow-hidden -mt-4">
         <div className="absolute inset-0">
           <img
             src="https://images.unsplash.com/photo-1605870445919-838d190e8e1b?w=1200&q=80"

@@ -22,7 +22,7 @@ const About: React.FC = () => {
           }
         });
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
 
     // Observe all animated sections
@@ -149,7 +149,7 @@ const About: React.FC = () => {
       `}</style>
 
       {/* Hero Section with Image */}
-      <section className="relative h-[50vh] overflow-hidden">
+      <section className="relative h-[65vh] overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-gray-900/85 via-green-900/70 to-gray-800/85 z-10" />
         <img
           src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&q=80"
